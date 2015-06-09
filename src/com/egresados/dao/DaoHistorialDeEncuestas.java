@@ -26,7 +26,9 @@ public class DaoHistorialDeEncuestas implements DataAccessObject<HistorialDeEncu
     private PreparedStatement update;
     private PreparedStatement delete;
     private PreparedStatement find;
+    private PreparedStatement find2;
     private PreparedStatement list;
+    private PreparedStatement list2;
     
     private DaoHistorialDeEncuestas() {
         con = Connection.getInstance();
@@ -83,7 +85,7 @@ public class DaoHistorialDeEncuestas implements DataAccessObject<HistorialDeEncu
         
         if (find == null) {
             this.find = con.getConnection().prepareStatement(""
-                    + "SELECT * FROM historial WHERE encuesta=?");
+                    + "SELECT * FROM historial WHERE egresado=?");
         }
         
         this.find.setString(1, value);
@@ -92,7 +94,25 @@ public class DaoHistorialDeEncuestas implements DataAccessObject<HistorialDeEncu
         
         return executeQuery != null && executeQuery.next() ? convertResultTo(executeQuery) : null;
     }
-
+    
+    public HistorialDeEncuestas find(String value, String value2) throws SQLException {
+        if (!con.isConnect()) {
+            con.connect();
+        }
+        
+        if (find2 == null) {
+            this.find2 = con.getConnection().prepareStatement(""
+                    + "SELECT * FROM historial WHERE egresado=? AND encuesta=?");
+        }
+        
+        this.find2.setString(1, value);
+        this.find2.setString(2, value2);
+        
+        ResultSet executeQuery = this.find2.executeQuery();
+        
+        return executeQuery != null && executeQuery.next() ? convertResultTo(executeQuery) : null;
+    }
+    
     @Override
     public List<HistorialDeEncuestas> list() throws SQLException {
         if (!con.isConnect()) {
@@ -105,6 +125,28 @@ public class DaoHistorialDeEncuestas implements DataAccessObject<HistorialDeEncu
         }
         
         ResultSet executeQuery = this.list.executeQuery();
+        List<HistorialDeEncuestas> historial = new ArrayList<>();
+        
+        while (executeQuery != null && executeQuery.next()) {
+            historial.add(convertResultTo(executeQuery));
+        }
+        
+        return historial;
+    }
+    
+    public List<HistorialDeEncuestas> list(String value) throws SQLException {
+        if (!con.isConnect()) {
+            con.connect();
+        }
+        
+        if (list2 == null) {
+            this.list2 = con.getConnection().prepareStatement(""
+                    + "SELECT * FROM historial WHERE egresado=? ORDER BY egresado");
+        }
+        
+        this.list2.setString(1, value);
+        
+        ResultSet executeQuery = this.list2.executeQuery();
         List<HistorialDeEncuestas> historial = new ArrayList<>();
         
         while (executeQuery != null && executeQuery.next()) {

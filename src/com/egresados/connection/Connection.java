@@ -62,7 +62,7 @@ public class Connection {
         this.port = "3306";
         this.baseDate = "egresados_db";
         this.user = "root";
-        this.password = "root";
+        this.password = "";
         this.driver = Connection.DRIVER_MYSQL;
     }
     
