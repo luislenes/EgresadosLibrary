@@ -28,6 +28,7 @@ public class DaoRespuesta implements DataAccessObject<Respuesta, String> {
     private PreparedStatement delete;
     private PreparedStatement find;
     private PreparedStatement list;
+    private PreparedStatement list2;
     
     private DaoRespuesta() {
         this.con = Connection.getInstance();
@@ -101,6 +102,28 @@ public class DaoRespuesta implements DataAccessObject<Respuesta, String> {
         }
         
         ResultSet executeQuery = this.list.executeQuery();
+        List<Respuesta> respuestas = new ArrayList<>();
+        
+        while (executeQuery != null && executeQuery.next()) {
+            respuestas.add(convertResultTo(executeQuery));
+        }
+        
+        return respuestas;
+    }
+    
+    public List<Respuesta> list(String value) throws SQLException {
+        if (!con.isConnect()) {
+            con.connect();
+        }
+        
+        if (list2 == null) {
+            this.list2 = con.getConnection().prepareStatement(""
+                    + "SELECT * FROM respuesta WHERE encuesta = ?");
+        }
+        
+        this.list2.setString(1, value);
+        
+        ResultSet executeQuery = this.list2.executeQuery();
         List<Respuesta> respuestas = new ArrayList<>();
         
         while (executeQuery != null && executeQuery.next()) {
