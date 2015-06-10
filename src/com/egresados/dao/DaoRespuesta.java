@@ -29,6 +29,7 @@ public class DaoRespuesta implements DataAccessObject<Respuesta, String> {
     private PreparedStatement find;
     private PreparedStatement list;
     private PreparedStatement list2;
+    private PreparedStatement count;
     
     private DaoRespuesta() {
         this.con = Connection.getInstance();
@@ -109,6 +110,23 @@ public class DaoRespuesta implements DataAccessObject<Respuesta, String> {
         }
         
         return respuestas;
+    }
+    
+    public int countAnswerByCodeQuestion(String code) throws SQLException {
+        if (!con.isConnect()) {
+            con.connect();
+        }
+        
+        if (count == null) {
+            this.count = con.getConnection().prepareStatement(""
+                    + "SELECT COUNT(*) AS cantidad FROM respuesta WHERE pregunta=?");
+        }
+        
+        count.setString(1, code);
+        
+        ResultSet executeQuery = count.executeQuery();
+        
+        return executeQuery != null && executeQuery.next() ? executeQuery.getInt("cantidad") : -1;
     }
     
     public List<Respuesta> list(String value) throws SQLException {
