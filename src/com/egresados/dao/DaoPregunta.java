@@ -27,6 +27,7 @@ public class DaoPregunta implements DataAccessObject<Pregunta, String> {
     private PreparedStatement list;
     private PreparedStatement deleteForColumn;
     private PreparedStatement delete;
+    private PreparedStatement find;
     
     private DaoPregunta() {
         con = Connection.getInstance();
@@ -120,8 +121,20 @@ public class DaoPregunta implements DataAccessObject<Pregunta, String> {
 
     @Override
     public Pregunta find(String value) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet.");
-        //To change body of generated methods, choose Tools | Templates.
+        if (!con.isConnect()) {
+            con.connect();
+        }
+        
+        if (find == null) {
+            this.find = con.getConnection().prepareStatement(""
+                    + "SELECT * FROM pregunta WHERE id=?");
+        }
+        
+        this.find.setString(1, value);
+        
+        ResultSet executeQuery = this.find.executeQuery();
+        
+        return executeQuery != null && executeQuery.next() ? convertResultTo(executeQuery) : null;
     }
     
     @Override
