@@ -7,6 +7,7 @@ package com.egresados.dao;
 
 import com.egresados.connection.Connection;
 import com.egresados.connection.DataAccessObject;
+import com.egresados.model.Opcion;
 import com.egresados.model.Respuesta;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -66,6 +67,24 @@ public class DaoRespuesta implements DataAccessObject<Respuesta, String> {
     public boolean update(Respuesta value) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet.");
         //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public boolean update(String egresado, String encuesta, String pregunta, Opcion opcion) throws SQLException {
+        if (!con.isConnect()) {
+            con.connect();
+        }
+        
+        if (update == null) {
+            update = con.getConnection().prepareStatement(""
+                    + "UPDATE respuesta SET opcion=? WHERE encuesta=? AND pregunta=? AND egresado=?");
+        }
+        
+        update.setString(1, opcion.getCodigo());
+        update.setString(2, encuesta);
+        update.setString(3, pregunta);
+        update.setString(4, egresado);
+        
+        return update.executeUpdate() ==  ROW_AFFECTED_SUCCESSFULLY;
     }
 
     @Override
