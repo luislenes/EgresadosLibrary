@@ -163,7 +163,7 @@ public class DaoRespuesta implements DataAccessObject<Respuesta, String> {
         }
         
         this.list3.setString(1, codePoll);
-        this.list3.setString(1, codeQuestion);
+        this.list3.setString(2, codeQuestion);
         
         ResultSet exe = this.list3.executeQuery();
         List<Respuesta> respuestas = new ArrayList<>();
