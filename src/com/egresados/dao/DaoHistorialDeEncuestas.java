@@ -23,7 +23,7 @@ public class DaoHistorialDeEncuestas implements DataAccessObject<HistorialDeEncu
     private final Connection con;
     
     private PreparedStatement insert;
-    private PreparedStatement update;
+    private PreparedStatement count;
     private PreparedStatement delete;
     private PreparedStatement find;
     private PreparedStatement find2;
@@ -154,6 +154,23 @@ public class DaoHistorialDeEncuestas implements DataAccessObject<HistorialDeEncu
         }
         
         return historial;
+    }
+    
+    public int countHistoryByPoll(String code) throws SQLException {
+        if (!con.isConnect()) {
+            con.connect();
+        }
+        
+        if (count == null) {
+            this.count = con.getConnection().prepareStatement(""
+                    + "SELECT COUNT(*) AS cantidad FROM historial WHERE encuesta=?");
+        }
+        
+        count.setString(1, code);
+        
+        ResultSet executeQuery = this.count.executeQuery();
+        
+        return executeQuery != null && executeQuery.next() ? executeQuery.getInt("cantidad") : -1;
     }
 
     private HistorialDeEncuestas convertResultTo(ResultSet executeQuery) throws SQLException {

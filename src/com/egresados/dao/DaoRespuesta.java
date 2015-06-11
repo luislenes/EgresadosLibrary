@@ -32,6 +32,7 @@ public class DaoRespuesta implements DataAccessObject<Respuesta, String> {
     private PreparedStatement list2;
     private PreparedStatement list3;
     private PreparedStatement count;
+    private PreparedStatement count2;
     
     private DaoRespuesta() {
         this.con = Connection.getInstance();
@@ -145,6 +146,23 @@ public class DaoRespuesta implements DataAccessObject<Respuesta, String> {
         count.setString(1, code);
         
         ResultSet executeQuery = count.executeQuery();
+        
+        return executeQuery != null && executeQuery.next() ? executeQuery.getInt("cantidad") : -1;
+    }
+    
+    public int countAnswerByCodeOption(String codeOption) throws SQLException {
+        if (!con.isConnect()) {
+            con.connect();
+        }
+        
+        if (count2 == null) {
+            this.count2 = con.getConnection().prepareStatement(""
+                    + "SELECT COUNT(*) AS cantidad FROM respuesta WHERE opcion=?");
+        }
+        
+        count2.setString(1, codeOption);
+        
+        ResultSet executeQuery = count2.executeQuery();
         
         return executeQuery != null && executeQuery.next() ? executeQuery.getInt("cantidad") : -1;
     }

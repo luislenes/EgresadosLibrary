@@ -29,6 +29,7 @@ public class DaoUsuario implements DataAccessObject<Usuario, String> {
     private PreparedStatement find;
     private PreparedStatement list;
     private PreparedStatement access;
+    private PreparedStatement count;
     
     private static final String KEY = "H7qYLcwfs85urDK";
     
@@ -164,6 +165,20 @@ public class DaoUsuario implements DataAccessObject<Usuario, String> {
         ResultSet executeQuery = this.access.executeQuery();
         
         return executeQuery.next();
+    }
+    
+    public int countEgresados() throws SQLException {
+        if (!con.isConnect()) {
+            con.connect();
+        }
+        
+        if (count == null) {
+            this.count = con.getConnection().prepareStatement(""
+                    + "SELECT COUNT(*) AS cantidad FROM usuario WHERE tipo='EGRESADO'");
+        }
+        
+        ResultSet executeQuery = this.count.executeQuery();
+        return executeQuery != null && executeQuery.next() ? executeQuery.getInt("cantidad") : -1;
     }
     
     private Usuario convertResultTo(ResultSet executeQuery) throws SQLException {
